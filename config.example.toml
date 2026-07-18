@@ -1,0 +1,43 @@
+# GitHookBroadcast — example configuration.
+# Values of the form "$env:NAME" are substituted from environment variables at load time.
+
+[server]
+bind = "0.0.0.0:8080"
+
+# ---- Routes: incoming webhook endpoints ----
+# Each route becomes  POST /hook/{id}
+# `secret` is used to verify the source signature (HMAC-SHA256 for GitHub/Gitea,
+# plain shared secret for GitLab — see README).
+# `sinks` is the list of sink ids (keys under [sinks]) that receive this route's events.
+
+[[routes]]
+id     = "main"
+secret = "$env:HOOK_SECRET_MAIN"
+sinks  = ["tg-devs", "discord-releases"]
+
+# ---- Sinks: outgoing messenger targets ----
+
+[sinks.tg-devs]
+kind    = "telegram"
+token   = "$env:TG_BOT_TOKEN"
+chat_id = "-1001234567890"
+
+[sinks.discord-releases]
+kind        = "discord"
+webhook_url = "$env:DISCORD_URL"
+
+[sinks.element-team]
+kind         = "element"
+homeserver   = "https://matrix.org"
+access_token = "$env:MATRIX_TOKEN"
+room_id      = "!abcdef:matrix.org"
+
+[sinks.mm-general]
+kind        = "mattermost"
+webhook_url = "$env:MM_URL"
+
+[sinks.pachca-team]
+kind         = "pachca"
+access_token = "$env:PACHCA_TOKEN"
+entity_id    = 12345
+entity_type  = "discussion"

@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  test:
+    name: test (x86_64-linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test --all
+
+  build:
+    name: build (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - x86_64-unknown-linux-musl
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-musl
+          - aarch64-unknown-linux-gnu
+          - riscv64gc-unknown-linux-musl
+          - riscv64gc-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Install cross
+        run: cargo install cross --locked --version 0.2.5
+      - name: Build
+        run: cross build --release --target ${{ matrix.target }} --bin gitbroadcast
+      - name: Verify static linkage (musl only)
+        if: endsWith(matrix.target, '-musl')
+        run: |
+          bin="target/${{ matrix.target }}/release/gitbroadcast"
+          file "$bin"
+          file "$bin" | grep -q "statically linked" \
+            || { echo "::error::binary is not statically linked"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gitbroadcast-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/gitbroadcast
+          if-no-files-found: error

@@ -1,0 +1,13 @@
+{
+  "action": "opened",
+  "number": 42,
+  "pull_request": {
+    "title": "Add cool feature",
+    "html_url": "https://github.com/octo/hello/pull/42",
+    "merged": false,
+    "base": { "ref": "main" },
+    "head": { "ref": "feature/cool" }
+  },
+  "repository": { "full_name": "octo/hello", "html_url": "https://github.com/octo/hello" },
+  "sender": { "login": "octocat", "html_url": "https://github.com/octocat" }
+}

@@ -1,0 +1,9 @@
+{
+  "object_kind": "push",
+  "ref": "refs/heads/main",
+  "user_username": "alice",
+  "project": { "path_with_namespace": "grp/proj", "web_url": "https://gitlab.example/grp/proj" },
+  "commits": [
+    { "id": "aaaaaaa1111111", "message": "feat: X", "url": "https://gitlab.example/grp/proj/-/commit/aaaaaaa", "author": { "name": "Alice" } }
+  ]
+}

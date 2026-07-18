@@ -1,0 +1,14 @@
+{
+  "object_kind": "merge_request",
+  "user": { "username": "alice" },
+  "project": { "path_with_namespace": "grp/proj", "web_url": "https://gitlab.example/grp/proj" },
+  "object_attributes": {
+    "action": "merge",
+    "state": "merged",
+    "iid": 7,
+    "title": "Merge my thing",
+    "url": "https://gitlab.example/grp/proj/-/merge_requests/7",
+    "source_branch": "feat",
+    "target_branch": "main"
+  }
+}

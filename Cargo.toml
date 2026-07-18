@@ -1,0 +1,42 @@
+[package]
+name = "gitbroadcast"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "HTTP server that relays GitHub/GitLab/Gitea webhooks to messengers"
+license = "MIT OR Apache-2.0"
+
+[lib]
+name = "gitbroadcast"
+path = "src/lib.rs"
+
+[[bin]]
+name = "gitbroadcast"
+path = "src/main.rs"
+
+[dependencies]
+axum = { version = "0.7", default-features = false, features = ["http1", "json", "tokio"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "net"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+hmac = "0.12"
+sha2 = "0.10"
+subtle = "2"
+hex = "0.4"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls-webpki-roots", "http2"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+toml = "0.8"
+thiserror = "1"
+anyhow = "1"
+bytes = "1"
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"
