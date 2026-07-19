@@ -13,7 +13,11 @@ pub async fn send(token: &str, chat_id: &str, msg: &Rendered) -> Result<()> {
     });
     let resp = client().post(&url).json(&body).send().await?;
     if !resp.status().is_success() {
-        return Err(anyhow!("telegram {}: {}", resp.status(), resp.text().await.unwrap_or_default()));
+        return Err(anyhow!(
+            "telegram {}: {}",
+            resp.status(),
+            resp.text().await.unwrap_or_default()
+        ));
     }
     Ok(())
 }

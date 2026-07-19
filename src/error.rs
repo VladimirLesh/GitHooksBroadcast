@@ -20,12 +20,12 @@ pub enum AppError {
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, body) = match &self {
-            AppError::RouteNotFound      => (StatusCode::NOT_FOUND, self.to_string()),
-            AppError::UnknownSource(_)   => (StatusCode::BAD_REQUEST, self.to_string()),
-            AppError::MissingSignature   => (StatusCode::UNAUTHORIZED, self.to_string()),
-            AppError::InvalidSignature   => (StatusCode::UNAUTHORIZED, self.to_string()),
-            AppError::InvalidPayload(_)  => (StatusCode::BAD_REQUEST, self.to_string()),
-            AppError::Ignored            => (StatusCode::NO_CONTENT, String::new()),
+            AppError::RouteNotFound => (StatusCode::NOT_FOUND, self.to_string()),
+            AppError::UnknownSource(_) => (StatusCode::BAD_REQUEST, self.to_string()),
+            AppError::MissingSignature => (StatusCode::UNAUTHORIZED, self.to_string()),
+            AppError::InvalidSignature => (StatusCode::UNAUTHORIZED, self.to_string()),
+            AppError::InvalidPayload(_) => (StatusCode::BAD_REQUEST, self.to_string()),
+            AppError::Ignored => (StatusCode::NO_CONTENT, String::new()),
         };
         (status, body).into_response()
     }

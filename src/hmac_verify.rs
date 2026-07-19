@@ -4,15 +4,20 @@ use subtle::ConstantTimeEq;
 
 pub fn verify_hex_sha256(secret: &[u8], body: &[u8], provided: &str) -> bool {
     let sig = provided.trim().trim_start_matches("sha256=");
-    let Ok(got) = hex::decode(sig) else { return false };
-    let mut mac = <Hmac<Sha256> as Mac>::new_from_slice(secret).expect("HMAC accepts any key length");
+    let Ok(got) = hex::decode(sig) else {
+        return false;
+    };
+    let mut mac =
+        <Hmac<Sha256> as Mac>::new_from_slice(secret).expect("HMAC accepts any key length");
     mac.update(body);
     let expected = mac.finalize().into_bytes();
     expected.as_slice().ct_eq(&got[..]).into()
 }
 
 pub fn verify_shared_secret(expected: &[u8], provided: &[u8]) -> bool {
-    if expected.len() != provided.len() { return false; }
+    if expected.len() != provided.len() {
+        return false;
+    }
     expected.ct_eq(provided).into()
 }
 

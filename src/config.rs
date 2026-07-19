@@ -29,11 +29,26 @@ pub struct RouteCfg {
 #[derive(Debug, Deserialize, Clone)]
 #[serde(tag = "kind", rename_all = "lowercase")]
 pub enum SinkCfg {
-    Telegram { token: String, chat_id: String },
-    Discord { webhook_url: String },
-    Element { homeserver: String, access_token: String, room_id: String },
-    Mattermost { webhook_url: String },
-    Pachca { access_token: String, entity_id: u64, entity_type: String },
+    Telegram {
+        token: String,
+        chat_id: String,
+    },
+    Discord {
+        webhook_url: String,
+    },
+    Element {
+        homeserver: String,
+        access_token: String,
+        room_id: String,
+    },
+    Mattermost {
+        webhook_url: String,
+    },
+    Pachca {
+        access_token: String,
+        entity_id: u64,
+        entity_type: String,
+    },
 }
 
 pub struct Config {
@@ -48,10 +63,14 @@ pub struct LoadedRoute {
 }
 
 pub fn load(path: &Path) -> Result<Config> {
-    let text = std::fs::read_to_string(path).with_context(|| format!("reading {}", path.display()))?;
+    let text =
+        std::fs::read_to_string(path).with_context(|| format!("reading {}", path.display()))?;
     let raw: RawConfig = toml::from_str(&text).context("parsing TOML")?;
 
-    let bind: SocketAddr = raw.server.bind.parse()
+    let bind: SocketAddr = raw
+        .server
+        .bind
+        .parse()
         .with_context(|| format!("parsing server.bind = {:?}", raw.server.bind))?;
 
     let mut sinks = BTreeMap::new();
@@ -70,10 +89,20 @@ pub fn load(path: &Path) -> Result<Config> {
         if secret.is_empty() {
             return Err(anyhow!("route {}: empty secret", r.id));
         }
-        routes.insert(r.id.clone(), LoadedRoute { secret, sinks: r.sinks });
+        routes.insert(
+            r.id.clone(),
+            LoadedRoute {
+                secret,
+                sinks: r.sinks,
+            },
+        );
     }
 
-    Ok(Config { bind, routes, sinks })
+    Ok(Config {
+        bind,
+        routes,
+        sinks,
+    })
 }
 
 fn resolve_sink(s: SinkCfg) -> Result<SinkCfg> {
@@ -85,7 +114,11 @@ fn resolve_sink(s: SinkCfg) -> Result<SinkCfg> {
         SinkCfg::Discord { webhook_url } => SinkCfg::Discord {
             webhook_url: resolve_env(&webhook_url)?,
         },
-        SinkCfg::Element { homeserver, access_token, room_id } => SinkCfg::Element {
+        SinkCfg::Element {
+            homeserver,
+            access_token,
+            room_id,
+        } => SinkCfg::Element {
             homeserver: resolve_env(&homeserver)?,
             access_token: resolve_env(&access_token)?,
             room_id: resolve_env(&room_id)?,
@@ -93,7 +126,11 @@ fn resolve_sink(s: SinkCfg) -> Result<SinkCfg> {
         SinkCfg::Mattermost { webhook_url } => SinkCfg::Mattermost {
             webhook_url: resolve_env(&webhook_url)?,
         },
-        SinkCfg::Pachca { access_token, entity_id, entity_type } => SinkCfg::Pachca {
+        SinkCfg::Pachca {
+            access_token,
+            entity_id,
+            entity_type,
+        } => SinkCfg::Pachca {
             access_token: resolve_env(&access_token)?,
             entity_id,
             entity_type: resolve_env(&entity_type)?,

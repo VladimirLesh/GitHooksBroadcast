@@ -12,9 +12,18 @@ pub async fn send(token: &str, entity_id: u64, entity_type: &str, msg: &Rendered
             "content": msg.markdown,
         }
     });
-    let resp = client().post(url).bearer_auth(token).json(&body).send().await?;
+    let resp = client()
+        .post(url)
+        .bearer_auth(token)
+        .json(&body)
+        .send()
+        .await?;
     if !resp.status().is_success() {
-        return Err(anyhow!("pachca {}: {}", resp.status(), resp.text().await.unwrap_or_default()));
+        return Err(anyhow!(
+            "pachca {}: {}",
+            resp.status(),
+            resp.text().await.unwrap_or_default()
+        ));
     }
     Ok(())
 }

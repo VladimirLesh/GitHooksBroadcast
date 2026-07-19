@@ -25,10 +25,24 @@ pub struct RouteState {
 impl AppState {
     pub fn from_config(cfg: Config) -> anyhow::Result<Self> {
         let sinks = Arc::new(cfg.sinks);
-        let routes = cfg.routes.into_iter().map(|(id, r)| {
-            (id, Arc::new(RouteState { secret: r.secret, sink_ids: r.sinks }))
-        }).collect();
-        Ok(Self { bind_addr: cfg.bind, routes, sinks })
+        let routes = cfg
+            .routes
+            .into_iter()
+            .map(|(id, r)| {
+                (
+                    id,
+                    Arc::new(RouteState {
+                        secret: r.secret,
+                        sink_ids: r.sinks,
+                    }),
+                )
+            })
+            .collect();
+        Ok(Self {
+            bind_addr: cfg.bind,
+            routes,
+            sinks,
+        })
     }
 }
 
@@ -49,7 +63,12 @@ async fn handle_hook(
     headers: HeaderMap,
     body: Bytes,
 ) -> Result<impl IntoResponse, AppError> {
-    let route = state.0.routes.get(&route_id).ok_or(AppError::RouteNotFound)?.clone();
+    let route = state
+        .0
+        .routes
+        .get(&route_id)
+        .ok_or(AppError::RouteNotFound)?
+        .clone();
 
     let source = sources::detect(&headers)?;
     sources::verify(source, &route.secret, &headers, &body)?;

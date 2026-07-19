@@ -5,8 +5,14 @@ use gitbroadcast::sources::SourceKind;
 fn push_event() -> Event {
     Event {
         source: SourceKind::Github,
-        repo: Repo { full_name: "octo/hello".into(), url: "https://gh/octo/hello".into() },
-        actor: Actor { login: "octocat".into(), url: Some("https://gh/octocat".into()) },
+        repo: Repo {
+            full_name: "octo/hello".into(),
+            url: "https://gh/octo/hello".into(),
+        },
+        actor: Actor {
+            login: "octocat".into(),
+            url: Some("https://gh/octocat".into()),
+        },
         kind: EventKind::Push {
             branch: "main".into(),
             commits: vec![CommitInfo {
@@ -41,8 +47,14 @@ fn plain_and_markdown_present() {
 fn pr_renders_verb() {
     let ev = Event {
         source: SourceKind::Github,
-        repo: Repo { full_name: "o/r".into(), url: "u".into() },
-        actor: Actor { login: "alice".into(), url: None },
+        repo: Repo {
+            full_name: "o/r".into(),
+            url: "u".into(),
+        },
+        actor: Actor {
+            login: "alice".into(),
+            url: None,
+        },
         kind: EventKind::PullRequest {
             action: PrAction::Closed { merged: true },
             number: 12,

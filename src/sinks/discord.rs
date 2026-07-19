@@ -12,7 +12,11 @@ pub async fn send(webhook_url: &str, msg: &Rendered) -> Result<()> {
     let body = json!({ "content": content, "allowed_mentions": { "parse": [] } });
     let resp = client().post(webhook_url).json(&body).send().await?;
     if !resp.status().is_success() {
-        return Err(anyhow!("discord {}: {}", resp.status(), resp.text().await.unwrap_or_default()));
+        return Err(anyhow!(
+            "discord {}: {}",
+            resp.status(),
+            resp.text().await.unwrap_or_default()
+        ));
     }
     Ok(())
 }
